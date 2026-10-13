@@ -263,7 +263,7 @@ async function handleSave() {
             <p class="text-sm font-medium text-neutral-900 dark:text-white">Available</p>
             <p class="text-xs text-neutral-500 dark:text-neutral-400">Uncheck to mark as sold out</p>
           </div>
-          <UToggle v-model="form.is_available" id="item-available" :disabled="saving" />
+          <USwitch v-model="form.is_available" id="item-available" :disabled="saving" />
         </div>
       </form>
     </template>

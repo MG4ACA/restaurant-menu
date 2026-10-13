@@ -4,7 +4,7 @@
 .nuxt
 .nitro
 .cache
-dist
+# dist is tracked so you can deploy pre-built static files to VPS
 
 # Node dependencies
 node_modules

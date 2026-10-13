@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui'
@@ -13,14 +15,15 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      supabaseUrl: '',
-      supabaseAnonKey: ''
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
+      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || ''
     }
   },
 
-  routeRules: {
-    '/': { prerender: true },
-    '/menu/**': { ssr: true }
+  nitro: {
+    output: {
+      publicDir: 'dist'
+    }
   },
 
   vite: {

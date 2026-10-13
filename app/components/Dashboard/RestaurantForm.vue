@@ -165,7 +165,7 @@ async function handleSubmit() {
           <p class="text-sm font-medium text-neutral-900 dark:text-white">Published</p>
           <p class="text-xs text-neutral-500 dark:text-neutral-400">Make your menu visible to customers</p>
         </div>
-        <UToggle v-model="form.is_published" id="restaurant-published" :disabled="saving" />
+        <USwitch v-model="form.is_published" id="restaurant-published" :disabled="saving" />
       </div>
 
       <div class="pt-2">

@@ -1,0 +1,1 @@
+import{c as e,o as t}from"./DGc4akV8.js";import{t as n}from"./BmaeDd10.js";var r=t(async()=>{let{user:t,loading:r,init:i}=n();if(r.value&&await i(),!t.value)return e(`/login`)});export{r as default};
