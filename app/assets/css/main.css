@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'Inter', sans-serif;
+
+  /* Warm amber/orange primary – appetizing, Sri Lankan inspired */
+  --color-primary-50: #fff8f0;
+  --color-primary-100: #feecdc;
+  --color-primary-200: #fcd9b3;
+  --color-primary-300: #f9be80;
+  --color-primary-400: #f59e47;
+  --color-primary-500: #f07b1d;
+  --color-primary-600: #e05d0a;
+  --color-primary-700: #b8450b;
+  --color-primary-800: #923710;
+  --color-primary-900: #762f10;
+  --color-primary-950: #3f1506;
+}
+
+/* Smooth scrollbar hide for category pills */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
