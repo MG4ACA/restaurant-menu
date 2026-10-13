@@ -61,6 +61,30 @@ async function handleSubmit() {
     loading.value = false
   }
 }
+
+const DEMO_EMAIL = 'demo@lumicore-labs.com'
+const DEMO_PASSWORD = 'demo123456'
+
+async function handleDemoLogin() {
+  mode.value = 'signin'
+  email.value = DEMO_EMAIL
+  password.value = DEMO_PASSWORD
+  loading.value = true
+  try {
+    await signIn(DEMO_EMAIL, DEMO_PASSWORD)
+    toast.add({ title: 'Welcome to the Demo!', description: 'Logged in to test the owner dashboard.', color: 'success' })
+    await navigateTo('/dashboard')
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Demo sign in failed'
+    toast.add({
+      title: 'Demo account notice',
+      description: 'Make sure demo@lumicore-labs.com is created in Supabase Auth or use Sign Up tab.',
+      color: 'warning'
+    })
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -100,6 +124,37 @@ async function handleSubmit() {
             </div>
           </div>
         </template>
+
+        <!-- 1-Click Demo Section -->
+        <div class="mb-5 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-300/60 dark:border-amber-800/60">
+          <div class="flex items-center gap-2 mb-1.5 text-amber-900 dark:text-amber-200">
+            <UIcon name="i-lucide-sparkles" class="size-4 text-amber-600 dark:text-amber-400 shrink-0" />
+            <span class="text-xs font-bold uppercase tracking-wider">Restaurant Owner Demo</span>
+          </div>
+          <p class="text-xs text-neutral-600 dark:text-neutral-400 mb-3">
+            Want to test the dashboard immediately? Click below for instant access with pre-configured demo data.
+          </p>
+          <UButton
+            color="primary"
+            variant="solid"
+            size="sm"
+            icon="i-lucide-play"
+            class="w-full justify-center font-medium shadow-sm"
+            :loading="loading"
+            @click="handleDemoLogin"
+          >
+            Explore Live Demo (1-Click)
+          </UButton>
+          <div class="mt-2 text-[11px] text-neutral-500 text-center font-mono">
+            demo@lumicore-labs.com &bull; demo123456
+          </div>
+        </div>
+
+        <div class="relative flex py-1 items-center mb-4">
+          <div class="flex-grow border-t border-neutral-200 dark:border-neutral-800"></div>
+          <span class="flex-shrink mx-3 text-xs uppercase text-neutral-400 tracking-wider">Or sign in with email</span>
+          <div class="flex-grow border-t border-neutral-200 dark:border-neutral-800"></div>
+        </div>
 
         <form class="space-y-4" @submit.prevent="handleSubmit">
           <UFormField label="Email address" :error="errors.email" required>

@@ -255,7 +255,17 @@ function scrollToCategory(id: string) {
 
         <!-- Footer -->
         <div class="border-t border-neutral-200 dark:border-neutral-800 pt-6 mt-8 text-center text-xs text-neutral-400 dark:text-neutral-500">
-          <p>Powered by <span class="font-semibold">Lumicore Menu</span></p>
+          <p>
+            Powered by
+            <a
+              href="https://lumicore-labs.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-semibold text-neutral-600 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 hover:underline transition-colors"
+            >
+              Lumicore Labs
+            </a>
+          </p>
         </div>
       </div>
     </template>
