@@ -10,8 +10,53 @@ const emit = defineEmits<{
   saved: []
 }>()
 
-const { createRestaurant, updateRestaurant } = useRestaurant()
+const {
+  createRestaurant,
+  updateRestaurant,
+  uploadRestaurantLogo,
+  removeRestaurantLogo,
+  getPhotoUrl
+} = useRestaurant()
 const toast = useToast()
+
+const logoInputRef = ref<HTMLInputElement | null>(null)
+const uploadingLogo = ref(false)
+const removingLogo = ref(false)
+
+function triggerLogoInput() {
+  logoInputRef.value?.click()
+}
+
+async function handleLogoFileChange(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  uploadingLogo.value = true
+  try {
+    await uploadRestaurantLogo(file)
+    toast.add({ title: 'Logo uploaded successfully!', color: 'success' })
+    emit('saved')
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Logo upload failed'
+    toast.add({ title: 'Upload failed', description: msg, color: 'error' })
+  } finally {
+    uploadingLogo.value = false
+    if (logoInputRef.value) logoInputRef.value.value = ''
+  }
+}
+
+async function handleRemoveLogo() {
+  removingLogo.value = true
+  try {
+    await removeRestaurantLogo()
+    toast.add({ title: 'Logo removed', color: 'neutral' })
+    emit('saved')
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Failed to remove logo'
+    toast.add({ title: 'Error', description: msg, color: 'error' })
+  } finally {
+    removingLogo.value = false
+  }
+}
 
 const form = reactive({
   name: props.existing?.name || '',
@@ -100,6 +145,62 @@ async function handleSubmit() {
     </template>
 
     <form class="space-y-5" @submit.prevent="handleSubmit">
+      <!-- Restaurant Logo -->
+      <div v-if="existing" class="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700">
+        <label class="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
+          Restaurant Logo
+        </label>
+        <div class="flex items-center gap-4">
+          <div class="size-20 rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+            <img
+              v-if="existing.logo_path"
+              :src="getPhotoUrl(existing.logo_path)"
+              :alt="existing.name"
+              class="size-full object-cover"
+            />
+            <UIcon v-else name="i-lucide-store" class="size-8 text-neutral-400" />
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <UButton
+                type="button"
+                size="xs"
+                color="neutral"
+                variant="outline"
+                icon="i-lucide-upload"
+                :loading="uploadingLogo"
+                @click="triggerLogoInput"
+              >
+                {{ existing.logo_path ? 'Change logo' : 'Upload logo' }}
+              </UButton>
+              <UButton
+                v-if="existing.logo_path"
+                type="button"
+                size="xs"
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash-2"
+                :loading="removingLogo"
+                @click="handleRemoveLogo"
+              >
+                Remove
+              </UButton>
+            </div>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+              PNG, JPG or WebP (max 5 MB). Displayed on your public digital menu header.
+            </p>
+            <input
+              ref="logoInputRef"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="handleLogoFileChange"
+            />
+          </div>
+        </div>
+      </div>
+
       <UFormField label="Restaurant name" :error="errors.name" required>
         <UInput
           v-model="form.name"

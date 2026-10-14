@@ -6,6 +6,7 @@ export interface Restaurant {
   description: string | null
   phone: string | null
   address: string | null
+  logo_path?: string | null
   is_published: boolean
   created_at: string
   updated_at: string

@@ -13,7 +13,8 @@ const {
   fetchRestaurant,
   fetchCategories,
   fetchMenuItems,
-  togglePublished
+  togglePublished,
+  getPhotoUrl
 } = useRestaurant()
 
 const togglingPublish = ref(false)
@@ -88,15 +89,27 @@ const tabs = [
     <template v-else>
       <!-- Page header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">{{ restaurant.name }}</h1>
-          <div class="flex items-center gap-2 mt-1">
-            <UBadge
-              :color="restaurant.is_published ? 'success' : 'warning'"
-              variant="subtle"
-              :label="restaurant.is_published ? 'Published' : 'Draft'"
+        <div class="flex items-center gap-3.5">
+          <div
+            v-if="restaurant.logo_path"
+            class="size-14 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm shrink-0"
+          >
+            <img
+              :src="getPhotoUrl(restaurant.logo_path)"
+              :alt="restaurant.name"
+              class="size-full object-cover"
             />
-            <span class="text-sm text-neutral-500 dark:text-neutral-400">/menu/{{ restaurant.slug }}</span>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">{{ restaurant.name }}</h1>
+            <div class="flex items-center gap-2 mt-1">
+              <UBadge
+                :color="restaurant.is_published ? 'success' : 'warning'"
+                variant="subtle"
+                :label="restaurant.is_published ? 'Published' : 'Draft'"
+              />
+              <span class="text-sm text-neutral-500 dark:text-neutral-400">/menu/{{ restaurant.slug }}</span>
+            </div>
           </div>
         </div>
 

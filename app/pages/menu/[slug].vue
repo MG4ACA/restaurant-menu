@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { Category, MenuItem, Restaurant } from '~/types'
 import { formatPrice } from '~/utils/format'
-import type { Restaurant, Category, MenuItem } from '~/types'
 
 definePageMeta({ layout: 'blank' })
 
@@ -148,12 +148,33 @@ function scrollToCategory(id: string) {
 
       <!-- Hero header -->
       <div class="bg-gradient-to-br from-amber-600 via-orange-500 to-red-500 text-white">
-        <div class="max-w-2xl mx-auto px-4 pt-10 pb-8">
-          <div class="flex items-center gap-2 mb-2 opacity-80">
-            <UIcon name="i-lucide-utensils" class="size-4" />
-            <span class="text-sm font-medium tracking-wide uppercase">Digital Menu</span>
+        <div class="max-w-2xl mx-auto px-4 pt-6 sm:pt-8 pb-8">
+          <!-- Top utility bar: Digital Menu tag + Dark/Light mode switch -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-1.5 opacity-90">
+              <UIcon name="i-lucide-utensils" class="size-4" />
+              <span class="text-xs font-semibold tracking-wider uppercase">Digital Menu</span>
+            </div>
+            <div class="bg-black/20 hover:bg-black/30 backdrop-blur rounded-full p-0.5 border border-white/20 transition-colors">
+              <UColorModeButton />
+            </div>
           </div>
-          <h1 class="text-3xl sm:text-4xl font-bold mb-3 leading-tight">{{ restaurant.name }}</h1>
+
+          <div class="flex items-center gap-4 mb-3">
+            <div
+              v-if="restaurant.logo_path"
+              class="size-16 sm:size-20 rounded-2xl overflow-hidden bg-white/15 backdrop-blur border border-white/25 shadow-lg shrink-0 p-0.5"
+            >
+              <img
+                :src="getPhotoUrl(restaurant.logo_path)"
+                :alt="restaurant.name"
+                class="size-full object-cover rounded-[14px]"
+              />
+            </div>
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold leading-tight">{{ restaurant.name }}</h1>
+            </div>
+          </div>
           <p v-if="restaurant.description" class="text-white/80 text-sm sm:text-base leading-relaxed">
             {{ restaurant.description }}
           </p>
@@ -171,7 +192,7 @@ function scrollToCategory(id: string) {
       </div>
 
       <!-- Sticky category nav -->
-      <div v-if="categories.length > 1" class="sticky top-0 z-30 bg-white/95 dark:bg-neutral-950/95 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
+      <div v-if="categories.length > 0" class="sticky top-0 z-30 bg-white/95 dark:bg-neutral-950/95 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
         <div class="max-w-2xl mx-auto px-4">
           <div class="flex gap-1 overflow-x-auto scrollbar-none py-2">
             <button
@@ -210,43 +231,54 @@ function scrollToCategory(id: string) {
             <div
               v-for="item in itemsForCategory(cat.id)"
               :key="item.id"
-              class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 overflow-hidden flex gap-0"
+              class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 overflow-hidden"
               :class="{ 'opacity-60': !item.is_available }"
             >
               <!-- Item content -->
-              <div class="flex-1 p-4">
-                <div class="flex items-start justify-between gap-3">
+              <div class="p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <!-- Name, description & price (if no photo) -->
                   <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-neutral-900 dark:text-white leading-snug">
-                      {{ item.name }}
-                    </p>
+                    <div class="flex items-center gap-2">
+                      <p class="font-semibold text-neutral-900 dark:text-white leading-snug">
+                        {{ item.name }}
+                      </p>
+                      <UBadge
+                        v-if="!item.is_available"
+                        color="error"
+                        variant="subtle"
+                        size="xs"
+                        label="Sold out"
+                      />
+                    </div>
                     <p v-if="item.description" class="text-sm text-neutral-500 dark:text-neutral-400 mt-1 leading-relaxed">
                       {{ item.description }}
                     </p>
+                    <!-- Price below description if no photo -->
+                    <div v-if="!item.photo_path" class="mt-3">
+                      <span class="text-base font-bold text-primary-600 dark:text-primary-400">
+                        {{ formatPrice(item.price) }}
+                      </span>
+                    </div>
                   </div>
 
-                  <!-- Photo (right side, no photo = no column) -->
-                  <div v-if="item.photo_path" class="shrink-0 size-20 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-                    <img
-                      :src="getPhotoUrl(item.photo_path)"
-                      :alt="item.name"
-                      class="size-full object-cover"
-                      loading="lazy"
-                    />
+                  <!-- Right side: Photo with Price directly below -->
+                  <div v-if="item.photo_path" class="shrink-0 flex flex-col items-center">
+                    <div class="size-20 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 shadow-sm relative mb-1.5">
+                      <img
+                        :src="getPhotoUrl(item.photo_path)"
+                        :alt="item.name"
+                        class="size-full object-cover"
+                        loading="lazy"
+                      />
+                      <div v-if="!item.is_available" class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <span class="text-[10px] font-bold text-white bg-red-600/90 px-1.5 py-0.5 rounded">Sold out</span>
+                      </div>
+                    </div>
+                    <span class="text-sm font-bold text-primary-600 dark:text-primary-400">
+                      {{ formatPrice(item.price) }}
+                    </span>
                   </div>
-                </div>
-
-                <!-- Price + sold out badge -->
-                <div class="flex items-center justify-between mt-3">
-                  <span class="text-base font-bold text-primary-600 dark:text-primary-400">
-                    {{ formatPrice(item.price) }}
-                  </span>
-                  <UBadge
-                    v-if="!item.is_available"
-                    color="error"
-                    variant="subtle"
-                    label="Sold out"
-                  />
                 </div>
               </div>
             </div>

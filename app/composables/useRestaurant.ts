@@ -223,6 +223,31 @@ export function useRestaurant() {
     await updateMenuItem(itemId, { photo_path: null })
   }
 
+  async function uploadRestaurantLogo(file: File) {
+    if (!user.value || !restaurant.value) throw new Error('Not authenticated')
+    const ext = file.name.split('.').pop()
+    const path = `${user.value.id}/${restaurant.value.id}/logo-${Date.now()}.${ext}`
+
+    if (restaurant.value.logo_path) {
+      await supabase.storage.from('menu-photos').remove([restaurant.value.logo_path])
+    }
+
+    const { error: uploadErr } = await supabase.storage
+      .from('menu-photos')
+      .upload(path, file, { upsert: true })
+
+    if (uploadErr) throw uploadErr
+
+    await updateRestaurant({ logo_path: path })
+    return path
+  }
+
+  async function removeRestaurantLogo() {
+    if (!restaurant.value?.logo_path) return
+    await supabase.storage.from('menu-photos').remove([restaurant.value.logo_path])
+    await updateRestaurant({ logo_path: null })
+  }
+
   function getPhotoUrl(path: string) {
     const { data } = supabase.storage.from('menu-photos').getPublicUrl(path)
     return data.publicUrl
@@ -248,6 +273,8 @@ export function useRestaurant() {
     deleteMenuItem,
     uploadPhoto,
     removePhoto,
+    uploadRestaurantLogo,
+    removeRestaurantLogo,
     getPhotoUrl
   }
 }

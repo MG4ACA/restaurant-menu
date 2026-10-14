@@ -19,6 +19,7 @@ create table public.restaurants (
   description text,
   phone text,
   address text,
+  logo_path text,
   is_published boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
